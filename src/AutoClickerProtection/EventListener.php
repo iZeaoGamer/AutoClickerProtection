@@ -35,18 +35,19 @@ class EventListener implements Listener
             $transactionType = $packet->transactionType;
             if ($transactionType === InventoryTransactionPacket::TYPE_USE_ITEM || $transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY) {
                 $this->plugin->addClick($player);
+                foreach($this->plugin->getServer()->getOnlinePlayers() as $staff){
+                    if($staff->hasPermission("autoclicker.protection")){
                 if ($this->plugin->getClicks($player) > $this->plugin->getConfig()->getNested("allowed-clicks-per-second") && !$player->isClosed()) {
-                    $this->plugin->getServer()->broadcastMessage(str_replace(["{CLICKCOUNT}", "{PLAYER}"], [$this->plugin->getClicks($player), $player->getName()], $this->plugin->translateColorTags($this->plugin->getConfig()->getNested("autoclick-detected-message"))));
-                    switch ($this->plugin->getConfig()->getNested("autoclick-detected-punishment")) {
-                        case "ban":
-                            $this->plugin->getServer()->getNameBans()->addBan($player->getName(), $this->plugin->translateColorTags($this->plugin->getConfig()->getNested("autoclick-punishment-ban-message")));
-                            $player->kick($this->plugin->translateColorTags($this->plugin->getConfig()->getNested("autoclick-punishment-ban-message")), false);
-                            break;
-                        case "kick":
-                        default:
-                            $player->kick($this->plugin->translateColorTags($this->plugin->getConfig()->getNested("autoclick-punishment-kick-message")), false);
-                            break;
-                    }
+                    $staff->sendMessage(TextFormat::colorize("&7[&cAutoClicker&4Detection&7] &6" . $player->getName() . " &7is clicking atleast &6" . $this->plugin->getClicks($player) . " &7CPS."));
+                //    switch ($this->plugin->getConfig()->getNested("autoclick-detected-punishment")) {
+                      //case "ban":
+                         //   $this->plugin->getServer()->getNameBans()->addBan($player->getName(), $this->plugin->translateColorTags($this->plugin->getConfig()->getNested("autoclick-punishment-ban-message")));
+                           // $player->kick($this->plugin->translateColorTags($this->plugin->getConfig()->getNested("autoclick-punishment-ban-message")), false);
+                        //    break;
+                      //  case "kick":
+                     //   default:
+                       //     $player->kick($this->plugin->translateColorTags($this->plugin->getConfig()->getNested("autoclick-punishment-kick-message")), false);
+                        //    break;
                     $event->setCancelled();
                 }
             }
